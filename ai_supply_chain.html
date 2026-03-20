@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Supply Chain Monitor</title>
+<style>
+
+:root{--bg:#07091f;--p1:#0c1035;--p2:#111840;--txt:#e8ecff;--mu:#8892cc;--gr:#2ecc87;--re:#ff4d6d;--bl:#4ea8ff;--yl:#fbbf24;--bo:#1e2a6a;--hd:#080d2e;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--txt);}
+.page{max-width:1600px;margin:0 auto;padding:20px 16px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.topbar h1{font-size:18px;font-weight:700;}
+.meta{font-size:12px;color:var(--mu);}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;}
+input,select,button{background:#0a0f30;color:var(--txt);border:1px solid var(--bo);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;}
+input{cursor:text;} button:hover{background:#1a2260;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
+.card{background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--bo);border-radius:12px;padding:14px;}
+.card .lb{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;}
+.card .vl{font-size:20px;font-weight:700;margin:6px 0 2px;}
+.card .sb{font-size:11px;color:var(--mu);}
+.g .vl{color:var(--gr);}.r .vl{color:var(--re);}.b .vl{color:var(--bl);}.y .vl{color:var(--yl);}
+.tw{background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--bo);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.tb{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;gap:8px;}
+.tb h2{font-size:14px;font-weight:600;}
+.catbar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;}
+.catbtn{background:rgba(255,255,255,.05);border:1px solid var(--bo);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s;}
+.catbtn:hover{background:rgba(255,255,255,.1);}
+.catbtn.active{background:var(--bl);border-color:var(--bl);color:#fff;}
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--hd);padding:10px 12px;font-size:10px;color:var(--mu);text-transform:uppercase;text-align:right;white-space:nowrap;cursor:pointer;letter-spacing:.3px;}
+thead th:first-child{text-align:left;}
+thead th:hover{color:var(--txt);}
+tbody td{padding:9px 12px;font-size:13px;border-top:1px solid rgba(30,42,106,.4);text-align:right;white-space:nowrap;}
+tbody td:first-child{text-align:left;font-weight:600;}
+tbody tr:hover{background:rgba(255,255,255,.03);}
+.pos{color:var(--gr);font-weight:600;}.neg{color:var(--re);font-weight:600;}.mu{color:var(--mu);}
+.cat{font-size:11px;color:var(--mu);display:block;margin-top:2px;font-weight:400;}
+#ov{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;}
+#ov.hn{display:none;}
+.bx{background:#0c1035;border:1px solid var(--bo);border-radius:16px;padding:28px;max-width:540px;width:92%;}
+.bx h2{font-size:17px;margin-bottom:8px;}
+.bx p{font-size:13px;color:var(--mu);line-height:1.65;margin-bottom:12px;}
+.bx input{width:100%;margin-bottom:8px;padding:10px 12px;}
+.bxrow{display:flex;gap:10px;}
+.bxrow button{flex:1;padding:10px;font-size:13px;}
+.bg2{background:rgba(46,204,135,.18)!important;border-color:var(--gr)!important;}
+.bb{background:rgba(78,168,255,.18)!important;border-color:var(--bl)!important;}
+#em{color:var(--re);font-size:12px;min-height:16px;margin-bottom:8px;}
+code{background:rgba(255,255,255,.08);padding:2px 5px;border-radius:4px;font-size:11px;}
+
+</style>
+</head>
+<body>
+<div id="ov"><div class="bx">
+<h2>AI Supply Chain Monitor</h2>
+<p>Paste your <b>Google Sheets published CSV URL</b>.<br><br>
+In Sheets: <code>File &gt; Share &gt; Publish to web</code> &gt; select tab &gt; <code>CSV</code> &gt; copy URL.<br><br>
+Required columns: <code>Category, Company, Ticker, 1D%, 1W%, 2W%, 1M%, 3M%</code></p>
+<input type="text" id="csvUrl" placeholder="https://docs.google.com/spreadsheets/d/e/...output=csv"/>
+<div id="em"></div>
+<div class="bxrow">
+<button class="bg2" id="btnC">Connect Sheet</button>
+<button class="bb" id="btnD">Demo Data</button>
+</div></div></div>
+<div class="page">
+<div class="topbar"><div><h1>🔌 AI Supply Chain</h1><div class="meta" id="upd">-</div></div>
+<div class="ctrl">
+<input type="text" id="fi" placeholder="Search company..." style="width:160px"/>
+<select id="ss"><option value="d1">Sort: 1D%</option><option value="w1">1W%</option><option value="w2">2W%</option><option value="m1">1M%</option><option value="m3">3M%</option></select>
+<button id="btnDi">Desc</button><button id="btnR">Refresh</button><button id="btnS">Settings</button>
+</div></div>
+<div class="cards" id="cards"></div>
+<div class="tw">
+<div class="tb"><h2>All Stocks</h2><span class="mu" id="ts" style="font-size:11px"></span></div>
+<div class="catbar" id="catbar"></div>
+<table><thead><tr>
+<th>Company</th><th>1D%</th><th>1W%</th><th>2W%</th><th>1M%</th><th>3M%</th>
+</tr></thead><tbody id="tbody"></tbody></table>
+</div>
+</div>
+
+<script>
+var DEMO=[
+  {cat:"Semiconductors",name:"NVIDIA",tk:"NVDA",d1:0.023,w1:0.045,w2:0.089,m1:0.12,m3:0.35},
+  {cat:"Semiconductors",name:"AMD",tk:"AMD",d1:-0.015,w1:0.028,w2:0.052,m1:0.08,m3:0.22},
+  {cat:"Semiconductors",name:"TSMC",tk:"TSM",d1:0.008,w1:0.034,w2:0.067,m1:0.095,m3:0.28},
+  {cat:"Semiconductors",name:"ASML",tk:"ASML",d1:0.012,w1:0.041,w2:0.078,m1:0.11,m3:0.31},
+  {cat:"GPU/Accelerators",name:"Broadcom",tk:"AVGO",d1:-0.008,w1:0.019,w2:0.041,m1:0.072,m3:0.19},
+  {cat:"GPU/Accelerators",name:"Marvell",tk:"MRVL",d1:0.015,w1:0.038,w2:0.069,m1:0.089,m3:0.24},
+  {cat:"Memory",name:"Micron",tk:"MU",d1:0.019,w1:0.051,w2:0.094,m1:0.14,m3:0.38},
+  {cat:"Memory",name:"SK Hynix",tk:"000660.KS",d1:0.021,w1:0.048,w2:0.088,m1:0.13,m3:0.36},
+  {cat:"Cooling/HVAC",name:"Vertiv",tk:"VRT",d1:0.027,w1:0.068,w2:0.12,m1:0.18,m3:0.42},
+  {cat:"Cooling/HVAC",name:"Carrier",tk:"CARR",d1:-0.005,w1:0.012,w2:0.029,m1:0.048,m3:0.11},
+  {cat:"Materials",name:"Freeport McMoran",tk:"FCX",d1:0.011,w1:0.024,w2:0.045,m1:0.067,m3:0.15},
+  {cat:"Materials",name:"Linde",tk:"LIN",d1:0.006,w1:0.018,w2:0.032,m1:0.054,m3:0.13},
+  {cat:"Power",name:"NextEra Energy",tk:"NEE",d1:0.009,w1:0.022,w2:0.041,m1:0.063,m3:0.14},
+  {cat:"Power",name:"Constellation Energy",tk:"CEG",d1:0.014,w1:0.037,w2:0.071,m1:0.098,m3:0.26},
+  {cat:"Networking",name:"Arista Networks",tk:"ANET",d1:0.018,w1:0.044,w2:0.081,m1:0.115,m3:0.29},
+  {cat:"Networking",name:"Cisco",tk:"CSCO",d1:-0.003,w1:0.008,w2:0.019,m1:0.034,m3:0.08}
+];
+
+var gR=[],gSk="d1",gSd="desc",gF="",gCat="All",gU="";
+
+function pp(v){
+  if(v==null||v!==v)return '<span class="mu">-</span>';
+  var c=v>0?"pos":v<0?"neg":"mu";
+  return '<span class="'+c+'">'+(v*100).toFixed(2)+'%</span>';
+}
+
+function render(){
+  var rows=gR.slice();
+  if(gF){var q=gF.toLowerCase();rows=rows.filter(function(r){return r.name.toLowerCase().indexOf(q)>=0||r.tk.toLowerCase().indexOf(q)>=0;});}
+  if(gCat!=="All"){rows=rows.filter(function(r){return r.cat===gCat;});}
+  rows.sort(function(a,b){var av=a[gSk]!=null?a[gSk]:-1e18,bv=b[gSk]!=null?b[gSk]:-1e18;return gSd==="desc"?bv-av:av-bv;});
+
+  document.getElementById("tbody").innerHTML=rows.map(function(r){
+    return "<tr><td><div>"+r.name+"</div><span class='cat'>"+r.cat+" • "+r.tk+"</span></td><td>"+pp(r.d1)+"</td><td>"+pp(r.w1)+"</td><td>"+pp(r.w2)+"</td><td>"+pp(r.m1)+"</td><td>"+pp(r.m3)+"</td></tr>";
+  }).join("");
+
+  // Update category buttons
+  var cats=["All"];
+  var seen={};
+  gR.forEach(function(r){if(!seen[r.cat]){cats.push(r.cat);seen[r.cat]=1;}});
+  document.getElementById("catbar").innerHTML=cats.map(function(c){
+    return '<button class="catbtn'+(c===gCat?" active":"")+'" onclick="setCat(\''+c+'\')">'+c+(c!=="All"?" ("+gR.filter(function(r){return r.cat===c;}).length+")":"")+'</button>';
+  }).join("");
+
+  // Summary cards
+  var periods=[{k:"d1",l:"1D"},{k:"w1",l:"1W"},{k:"w2",l:"2W"},{k:"m1",l:"1M"},{k:"m3",l:"3M"}];
+  var cardHTML="";
+  periods.forEach(function(p){
+    var vals=gR.map(function(r){return r[p.k];}).filter(function(v){return v!=null&&v===v;});
+    if(!vals.length)return;
+    var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+    var up=vals.filter(function(v){return v>0;}).length;
+    var dn=vals.filter(function(v){return v<0;}).length;
+    var c=avg>0?"g":"r";
+    cardHTML+='<div class="card '+c+'"><div class="lb">'+p.l+' Avg</div><div class="vl">'+(avg>=0?"+":"")+(avg*100).toFixed(2)+'%</div><div class="sb">↑'+up+' ↓'+dn+'</div></div>';
+  });
+  document.getElementById("cards").innerHTML=cardHTML;
+}
+
+function cleanPct(s){
+  if(!s||s.trim()==="")return null;
+  var bad=["#n/a","#name?","#ref!","#error!","#value!"];
+  if(bad.indexOf(s.trim().toLowerCase())>=0)return null;
+  var cleaned=s.replace(/[$,\s]/g,"");
+  if(cleaned.indexOf("%")>=0)return parseFloat(cleaned)/100;
+  var v=parseFloat(cleaned);
+  return isNaN(v)?null:v;
+}
+
+function parseCSV(txt){
+  var t=txt.trim();
+  if(!t||t[0]==="<"||t[0]==="{"||t[0]==="(")return null;
+  var lines=t.split(/\r?\n/).filter(function(l){return l.trim()&&l.replace(/,/g,"").trim()!=="";});
+  if(lines.length<2)return null;
+  var hdr=lines[0].split(",").map(function(s){return s.trim().toLowerCase();});
+  function fi(k){for(var i=0;i<hdr.length;i++){if(hdr[i].indexOf(k)>=0)return i;}return -1;}
+  var icat=fi("cat"),iname=fi("company")||fi("name"),itk=fi("ticker");
+  var i1d=fi("1d"),i1w=fi("1w"),i2w=fi("2w"),i1m=fi("1m"),i3m=fi("3m");
+  var rows=lines.slice(1).map(function(line){
+    var c=line.split(",").map(function(s){return s.trim().replace(/^"|"$/g,"");});
+    if(!c[iname]||!c[iname].trim())return null;
+    return {
+      cat:icat>=0?c[icat]||"Other":"Other",
+      name:c[iname],
+      tk:itk>=0?c[itk]||"":"",
+      d1:i1d>=0?cleanPct(c[i1d]):null,
+      w1:i1w>=0?cleanPct(c[i1w]):null,
+      w2:i2w>=0?cleanPct(c[i2w]):null,
+      m1:i1m>=0?cleanPct(c[i1m]):null,
+      m3:i3m>=0?cleanPct(c[i3m]):null
+    };
+  }).filter(Boolean);
+  return rows.length?rows:null;
+}
+
+function xget(url,cb){
+  var x=new XMLHttpRequest();x.open("GET",url,true);x.timeout=9000;
+  x.onreadystatechange=function(){if(x.readyState!==4)return;cb(x.status>=200&&x.status<300?null:"HTTP "+x.status,x.responseText);};
+  x.ontimeout=function(){cb("timeout","");};x.onerror=function(){cb("blocked","");};x.send();
+}
+
+function loadData(url){
+  document.getElementById("ts").textContent="Loading...";
+  var cb=url+(url.indexOf("?")>=0?"&":"?")+"_cb="+Date.now();
+  var p1="https://corsproxy.io/?"+encodeURIComponent(cb);
+  var p2="https://api.allorigins.win/get?url="+encodeURIComponent(cb);
+  xget(p1,function(e1,t1){
+    if(!e1&&t1){var r=parseCSV(t1);if(r){done(r);return;}}
+    xget(p2,function(e2,t2){
+      if(!e2&&t2){
+        try{var j=JSON.parse(t2);if(j.contents){var r2=parseCSV(j.contents);if(r2){done(r2);return;}}}catch(ex){}
+      }
+      xget(cb,function(e3,t3){
+        if(!e3&&t3){var r3=parseCSV(t3);if(r3){done(r3);return;}}
+        document.getElementById("ts").innerHTML='<span style="color:var(--re)">Failed. Drop a CSV file onto the page.</span>';
+      });
+    });
+  });
+}
+
+function done(rows){
+  gR=rows;
+  document.getElementById("upd").textContent="Updated: "+new Date().toLocaleTimeString()+" ("+rows.length+" stocks)";
+  document.getElementById("ts").textContent="";
+  render();
+}
+function doR(){if(gU)loadData(gU);}
+
+function setCat(c){gCat=c;render();}
+
+document.getElementById("btnC").onclick=function(){
+  var u=document.getElementById("csvUrl").value.trim();
+  if(!u){document.getElementById("em").textContent="Paste your CSV URL first.";return;}
+  document.getElementById("em").textContent="";
+  gU=u;try{localStorage.setItem("aiCSV",u);}catch(e){}
+  document.getElementById("ov").className="hn";
+  loadData(u);setInterval(doR,300000);
+};
+document.getElementById("btnD").onclick=function(){gR=DEMO;document.getElementById("ov").className="hn";document.getElementById("upd").textContent="Demo mode";render();};
+document.getElementById("btnS").onclick=function(){document.getElementById("ov").className="";};
+document.getElementById("btnDi").onclick=function(){gSd=gSd==="desc"?"asc":"desc";this.textContent=gSd==="desc"?"Desc":"Asc";render();};
+document.getElementById("btnR").onclick=doR;
+document.getElementById("fi").oninput=function(){gF=this.value;render();};
+document.getElementById("ss").onchange=function(){gSk=this.value;render();};
+
+document.body.ondragover=function(e){e.preventDefault();};
+document.body.ondrop=function(e){
+  e.preventDefault();
+  var file=e.dataTransfer.files[0];if(!file)return;
+  var rd=new FileReader();
+  rd.onload=function(ev){var r=parseCSV(ev.target.result);if(r){gU="";done(r);}else{alert("Could not parse. Check headers.");}};
+  rd.readAsText(file);
+};
+
+try{var sv=localStorage.getItem("aiCSV");if(sv)document.getElementById("csvUrl").value=sv;}catch(e){}
+</script>
+
+</body></html>
