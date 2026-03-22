@@ -9,7 +9,7 @@
 :root{--bg:#07091f;--p1:#0c1035;--p2:#111840;--txt:#e8ecff;--mu:#8892cc;--gr:#2ecc87;--re:#ff4d6d;--bl:#4ea8ff;--yl:#fbbf24;--bo:#1e2a6a;--hd:#080d2e;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--txt);}
-.page{max-width:1600px;margin:0 auto;padding:20px 16px;}
+.page{max-width:1800px;margin:0 auto;padding:20px 16px;}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
 .topbar h1{font-size:18px;font-weight:700;}
 .meta{font-size:12px;color:var(--mu);}
@@ -22,11 +22,13 @@ input{cursor:text;} button:hover{background:#1a2260;}
 .card .vl{font-size:20px;font-weight:700;margin:6px 0 2px;}
 .card .sb{font-size:11px;color:var(--mu);}
 .g .vl{color:var(--gr);}.r .vl{color:var(--re);}.b .vl{color:var(--bl);}.y .vl{color:var(--yl);}
-.tw{background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--bo);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:16px;}
+@media(max-width:1200px){.layout{grid-template-columns:1fr;}}
+.tw{background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--bo);border-radius:14px;overflow:hidden;}
 .tb{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;gap:8px;}
 .tb h2{font-size:14px;font-weight:600;}
-.catbar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;}
-.catbtn{background:rgba(255,255,255,.05);border:1px solid var(--bo);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s;}
+.catbar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;overflow-x:auto;}
+.catbtn{background:rgba(255,255,255,.05);border:1px solid var(--bo);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .catbtn:hover{background:rgba(255,255,255,.1);}
 .catbtn.active{background:var(--bl);border-color:var(--bl);color:#fff;}
 table{width:100%;border-collapse:collapse;}
@@ -35,16 +37,29 @@ thead th:first-child{text-align:left;}
 thead th:hover{color:var(--txt);}
 tbody td{padding:9px 12px;font-size:13px;border-top:1px solid rgba(30,42,106,.4);text-align:right;white-space:nowrap;}
 tbody td:first-child{text-align:left;font-weight:600;}
-tbody tr:hover{background:rgba(255,255,255,.03);}
+tbody tr{cursor:pointer;transition:background .15s;}
+tbody tr:hover{background:rgba(255,255,255,.05);}
+tbody tr.selected{background:rgba(78,168,255,.15);}
 .pos{color:var(--gr);font-weight:600;}.neg{color:var(--re);font-weight:600;}.mu{color:var(--mu);}
 .cat{font-size:11px;color:var(--mu);display:block;margin-top:2px;font-weight:400;}
+.newspanel{background:linear-gradient(160deg,var(--p1),var(--p2));border:1px solid var(--bo);border-radius:14px;padding:16px;max-height:800px;overflow-y:auto;}
+.newspanel h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.newsitem{padding:12px;border-bottom:1px solid rgba(30,42,106,.4);transition:background .15s;}
+.newsitem:last-child{border:none;}
+.newsitem:hover{background:rgba(255,255,255,.03);}
+.newsitem a{color:var(--txt);text-decoration:none;display:block;}
+.newsitem .nh{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4;}
+.newsitem .nm{font-size:11px;color:var(--mu);display:flex;gap:12px;flex-wrap:wrap;}
+.newsempty{color:var(--mu);font-size:13px;text-align:center;padding:40px 20px;}
+.newsload{color:var(--bl);font-size:13px;text-align:center;padding:40px 20px;}
 #ov{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;}
 #ov.hn{display:none;}
-.bx{background:#0c1035;border:1px solid var(--bo);border-radius:16px;padding:28px;max-width:540px;width:92%;}
+.bx{background:#0c1035;border:1px solid var(--bo);border-radius:16px;padding:28px;max-width:540px;width:92%;max-height:90vh;overflow-y:auto;}
 .bx h2{font-size:17px;margin-bottom:8px;}
 .bx p{font-size:13px;color:var(--mu);line-height:1.65;margin-bottom:12px;}
 .bx input{width:100%;margin-bottom:8px;padding:10px 12px;}
-.bxrow{display:flex;gap:10px;}
+.bx label{font-size:12px;color:var(--mu);display:block;margin-bottom:4px;margin-top:12px;}
+.bxrow{display:flex;gap:10px;margin-top:16px;}
 .bxrow button{flex:1;padding:10px;font-size:13px;}
 .bg2{background:rgba(46,204,135,.18)!important;border-color:var(--gr)!important;}
 .bb{background:rgba(78,168,255,.18)!important;border-color:var(--bl)!important;}
@@ -55,14 +70,16 @@ code{background:rgba(255,255,255,.08);padding:2px 5px;border-radius:4px;font-siz
 </head>
 <body>
 <div id="ov"><div class="bx">
-<h2>AI Supply Chain Monitor</h2>
-<p>Paste your <b>Google Sheets published CSV URL</b>.<br><br>
-In Sheets: <code>File &gt; Share &gt; Publish to web</code> &gt; select tab &gt; <code>CSV</code> &gt; copy URL.<br><br>
-Required columns: <code>Category, Company, Ticker, 1D%, 1W%, 2W%, 1M%, 3M%</code></p>
+<h2>AI Supply Chain Settings</h2>
+<p>Configure your data sources and API keys.</p>
+<label>Google Sheets CSV URL</label>
 <input type="text" id="csvUrl" placeholder="https://docs.google.com/spreadsheets/d/e/...output=csv"/>
+<label>Finnhub API Key (for news feed)</label>
+<input type="text" id="apiKey" placeholder="Your Finnhub API key"/>
+<p style="font-size:11px;margin-top:4px;">Get free API key at <a href="https://finnhub.io/register" target="_blank" style="color:var(--bl)">finnhub.io/register</a></p>
 <div id="em"></div>
 <div class="bxrow">
-<button class="bg2" id="btnC">Connect Sheet</button>
+<button class="bg2" id="btnSave">Save & Connect</button>
 <button class="bb" id="btnD">Demo Data</button>
 </div></div></div>
 <div class="page">
@@ -73,36 +90,31 @@ Required columns: <code>Category, Company, Ticker, 1D%, 1W%, 2W%, 1M%, 3M%</code
 <button id="btnDi">Desc</button><button id="btnR">Refresh</button><button id="btnS">Settings</button>
 </div></div>
 <div class="cards" id="cards"></div>
+<div class="layout">
 <div class="tw">
-<div class="tb"><h2>All Stocks</h2><span class="mu" id="ts" style="font-size:11px"></span></div>
+<div class="tb"><h2>All Stocks</h2><span class="mu" id="ts" style="font-size:11px">Click any stock to view news</span></div>
 <div class="catbar" id="catbar"></div>
 <table><thead><tr>
 <th>Company</th><th>1D%</th><th>1W%</th><th>2W%</th><th>1M%</th><th>3M%</th>
 </tr></thead><tbody id="tbody"></tbody></table>
 </div>
+<div class="newspanel" id="newspanel">
+<h3><span>📰</span><span id="newsTitle">Latest News</span></h3>
+<div id="newsFeed" class="newsempty">Select a stock to view news</div>
 </div>
+</div></div>
 
 <script>
 var DEMO=[
   {cat:"Semiconductors",name:"NVIDIA",tk:"NVDA",d1:0.023,w1:0.045,w2:0.089,m1:0.12,m3:0.35},
   {cat:"Semiconductors",name:"AMD",tk:"AMD",d1:-0.015,w1:0.028,w2:0.052,m1:0.08,m3:0.22},
-  {cat:"Semiconductors",name:"TSMC",tk:"TSM",d1:0.008,w1:0.034,w2:0.067,m1:0.095,m3:0.28},
-  {cat:"Semiconductors",name:"ASML",tk:"ASML",d1:0.012,w1:0.041,w2:0.078,m1:0.11,m3:0.31},
-  {cat:"GPU/Accelerators",name:"Broadcom",tk:"AVGO",d1:-0.008,w1:0.019,w2:0.041,m1:0.072,m3:0.19},
-  {cat:"GPU/Accelerators",name:"Marvell",tk:"MRVL",d1:0.015,w1:0.038,w2:0.069,m1:0.089,m3:0.24},
-  {cat:"Memory",name:"Micron",tk:"MU",d1:0.019,w1:0.051,w2:0.094,m1:0.14,m3:0.38},
-  {cat:"Memory",name:"SK Hynix",tk:"000660.KS",d1:0.021,w1:0.048,w2:0.088,m1:0.13,m3:0.36},
+  {cat:"GPU/AI Chips",name:"Broadcom",tk:"AVGO",d1:-0.008,w1:0.019,w2:0.041,m1:0.072,m3:0.19},
+  {cat:"Memory & Storage",name:"Micron",tk:"MU",d1:0.019,w1:0.051,w2:0.094,m1:0.14,m3:0.38},
   {cat:"Cooling/HVAC",name:"Vertiv",tk:"VRT",d1:0.027,w1:0.068,w2:0.12,m1:0.18,m3:0.42},
-  {cat:"Cooling/HVAC",name:"Carrier",tk:"CARR",d1:-0.005,w1:0.012,w2:0.029,m1:0.048,m3:0.11},
-  {cat:"Materials",name:"Freeport McMoran",tk:"FCX",d1:0.011,w1:0.024,w2:0.045,m1:0.067,m3:0.15},
-  {cat:"Materials",name:"Linde",tk:"LIN",d1:0.006,w1:0.018,w2:0.032,m1:0.054,m3:0.13},
-  {cat:"Power",name:"NextEra Energy",tk:"NEE",d1:0.009,w1:0.022,w2:0.041,m1:0.063,m3:0.14},
-  {cat:"Power",name:"Constellation Energy",tk:"CEG",d1:0.014,w1:0.037,w2:0.071,m1:0.098,m3:0.26},
-  {cat:"Networking",name:"Arista Networks",tk:"ANET",d1:0.018,w1:0.044,w2:0.081,m1:0.115,m3:0.29},
-  {cat:"Networking",name:"Cisco",tk:"CSCO",d1:-0.003,w1:0.008,w2:0.019,m1:0.034,m3:0.08}
+  {cat:"Server/Computing",name:"Super Micro",tk:"SMCI",d1:0.031,w1:0.074,w2:0.13,m1:0.19,m3:0.45},
 ];
 
-var gR=[],gSk="d1",gSd="desc",gF="",gCat="All",gU="";
+var gR=[],gSk="d1",gSd="desc",gF="",gCat="All",gU="",gAPIKey="",gSelTicker="";
 
 function pp(v){
   if(v==null||v!==v)return '<span class="mu">-</span>';
@@ -117,18 +129,18 @@ function render(){
   rows.sort(function(a,b){var av=a[gSk]!=null?a[gSk]:-1e18,bv=b[gSk]!=null?b[gSk]:-1e18;return gSd==="desc"?bv-av:av-bv;});
 
   document.getElementById("tbody").innerHTML=rows.map(function(r){
-    return "<tr><td><div>"+r.name+"</div><span class='cat'>"+r.cat+" • "+r.tk+"</span></td><td>"+pp(r.d1)+"</td><td>"+pp(r.w1)+"</td><td>"+pp(r.w2)+"</td><td>"+pp(r.m1)+"</td><td>"+pp(r.m3)+"</td></tr>";
+    var sel=r.tk===gSelTicker?' class="selected"':'';
+    return "<tr"+sel+" onclick='loadNews(\""+r.tk+"\",\""+r.name+"\")'><td><div>"+r.name+"</div><span class='cat'>"+r.cat+" • "+r.tk+"</span></td><td>"+pp(r.d1)+"</td><td>"+pp(r.w1)+"</td><td>"+pp(r.w2)+"</td><td>"+pp(r.m1)+"</td><td>"+pp(r.m3)+"</td></tr>";
   }).join("");
 
-  // Update category buttons
   var cats=["All"];
   var seen={};
   gR.forEach(function(r){if(!seen[r.cat]){cats.push(r.cat);seen[r.cat]=1;}});
   document.getElementById("catbar").innerHTML=cats.map(function(c){
-    return '<button class="catbtn'+(c===gCat?" active":"")+'" onclick="setCat(\''+c+'\')">'+c+(c!=="All"?" ("+gR.filter(function(r){return r.cat===c;}).length+")":"")+'</button>';
+    var count=c==="All"?"":" ("+gR.filter(function(r){return r.cat===c;}).length+")";
+    return '<button class="catbtn'+(c===gCat?" active":"")+'" onclick="setCat(\''+c.replace(/'/g,"\\'")+'\')">'+ c+count+'</button>';
   }).join("");
 
-  // Summary cards
   var periods=[{k:"d1",l:"1D"},{k:"w1",l:"1W"},{k:"w2",l:"2W"},{k:"m1",l:"1M"},{k:"m3",l:"3M"}];
   var cardHTML="";
   periods.forEach(function(p){
@@ -141,6 +153,51 @@ function render(){
     cardHTML+='<div class="card '+c+'"><div class="lb">'+p.l+' Avg</div><div class="vl">'+(avg>=0?"+":"")+(avg*100).toFixed(2)+'%</div><div class="sb">↑'+up+' ↓'+dn+'</div></div>';
   });
   document.getElementById("cards").innerHTML=cardHTML;
+}
+
+function loadNews(ticker,name){
+  gSelTicker=ticker;
+  render();
+  document.getElementById("newsTitle").textContent="News: "+name+" ("+ticker+")";
+
+  if(!gAPIKey){
+    document.getElementById("newsFeed").innerHTML='<div class="newsempty">Add your Finnhub API key in Settings to view news</div>';
+    return;
+  }
+
+  document.getElementById("newsFeed").innerHTML='<div class="newsload">Loading news...</div>';
+
+  var cleanTicker=ticker.split('.')[0].split(':')[1]||ticker.split('.')[0];
+  var now=Math.floor(Date.now()/1000);
+  var weekAgo=now-(7*24*60*60);
+  var url="https://finnhub.io/api/v1/company-news?symbol="+cleanTicker+"&from="+new Date(weekAgo*1000).toISOString().split('T')[0]+"&to="+new Date(now*1000).toISOString().split('T')[0]+"&token="+gAPIKey;
+
+  fetch(url)
+    .then(function(res){return res.json();})
+    .then(function(data){
+      if(!data||data.length===0){
+        document.getElementById("newsFeed").innerHTML='<div class="newsempty">No recent news found for '+ticker+'</div>';
+        return;
+      }
+      var html=data.slice(0,15).map(function(item){
+        var date=new Date(item.datetime*1000);
+        var timeAgo=getTimeAgo(item.datetime*1000);
+        return '<div class="newsitem"><a href="'+item.url+'" target="_blank"><div class="nh">'+item.headline+'</div><div class="nm"><span>'+item.source+'</span><span>'+timeAgo+'</span></div></a></div>';
+      }).join("");
+      document.getElementById("newsFeed").innerHTML=html;
+    })
+    .catch(function(err){
+      document.getElementById("newsFeed").innerHTML='<div class="newsempty" style="color:var(--re)">Error loading news. Check your API key.</div>';
+      console.error("News fetch error:",err);
+    });
+}
+
+function getTimeAgo(timestamp){
+  var sec=Math.floor((Date.now()-timestamp)/1000);
+  if(sec<60)return sec+"s ago";
+  if(sec<3600)return Math.floor(sec/60)+"m ago";
+  if(sec<86400)return Math.floor(sec/3600)+"h ago";
+  return Math.floor(sec/86400)+"d ago";
 }
 
 function cleanPct(s){
@@ -198,7 +255,7 @@ function loadData(url){
       }
       xget(cb,function(e3,t3){
         if(!e3&&t3){var r3=parseCSV(t3);if(r3){done(r3);return;}}
-        document.getElementById("ts").innerHTML='<span style="color:var(--re)">Failed. Drop a CSV file onto the page.</span>';
+        document.getElementById("ts").innerHTML='<span style="color:var(--re)">Failed to load CSV</span>';
       });
     });
   });
@@ -207,18 +264,20 @@ function loadData(url){
 function done(rows){
   gR=rows;
   document.getElementById("upd").textContent="Updated: "+new Date().toLocaleTimeString()+" ("+rows.length+" stocks)";
-  document.getElementById("ts").textContent="";
+  document.getElementById("ts").textContent="Click any stock to view news";
   render();
 }
 function doR(){if(gU)loadData(gU);}
 
 function setCat(c){gCat=c;render();}
 
-document.getElementById("btnC").onclick=function(){
+document.getElementById("btnSave").onclick=function(){
   var u=document.getElementById("csvUrl").value.trim();
+  var k=document.getElementById("apiKey").value.trim();
   if(!u){document.getElementById("em").textContent="Paste your CSV URL first.";return;}
   document.getElementById("em").textContent="";
-  gU=u;try{localStorage.setItem("aiCSV",u);}catch(e){}
+  gU=u;gAPIKey=k;
+  try{localStorage.setItem("aiCSV",u);localStorage.setItem("aiAPIKey",k);}catch(e){}
   document.getElementById("ov").className="hn";
   loadData(u);setInterval(doR,300000);
 };
@@ -234,11 +293,14 @@ document.body.ondrop=function(e){
   e.preventDefault();
   var file=e.dataTransfer.files[0];if(!file)return;
   var rd=new FileReader();
-  rd.onload=function(ev){var r=parseCSV(ev.target.result);if(r){gU="";done(r);}else{alert("Could not parse. Check headers.");}};
+  rd.onload=function(ev){var r=parseCSV(ev.target.result);if(r){gU="";done(r);}else{alert("Could not parse CSV");}};
   rd.readAsText(file);
 };
 
-try{var sv=localStorage.getItem("aiCSV");if(sv)document.getElementById("csvUrl").value=sv;}catch(e){}
+try{
+  var sv=localStorage.getItem("aiCSV");if(sv)document.getElementById("csvUrl").value=sv;
+  var ak=localStorage.getItem("aiAPIKey");if(ak){document.getElementById("apiKey").value=ak;gAPIKey=ak;}
+}catch(e){}
 </script>
 
 </body></html>
